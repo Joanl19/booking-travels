@@ -806,15 +806,19 @@ function doLogin() {
   const savedPass = localStorage.getItem('adminPass') || ADMIN_PASS;
   const savedUser = localStorage.getItem('adminUser') || ADMIN_USER;
   if (u === savedUser && p === savedPass) {
-    document.getElementById('login-page').style.display = 'none';
-    document.getElementById('admin-layout').classList.add('visible');
-    initAdmin();
-  } else {
+  localStorage.setItem('isAdminLoggedIn', 'true'); // ✅ add this
+
+  document.getElementById('login-page').style.display = 'none';
+  document.getElementById('admin-layout').classList.add('visible');
+  initAdmin();
+} else {
     document.getElementById('loginErr').style.display = 'block';
   }
 }
 
 function doLogout() {
+   localStorage.removeItem('isAdminLoggedIn'); // ✅ add this
+
   document.getElementById('admin-layout').classList.remove('visible');
   document.getElementById('login-page').style.display = 'flex';
   document.getElementById('loginPass').value = '';
@@ -1320,6 +1324,15 @@ document.querySelectorAll('.modal-overlay').forEach(m => {
 });
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
+});
+window.addEventListener('load', () => {
+  const isLoggedIn = localStorage.getItem('isAdminLoggedIn');
+
+  if (isLoggedIn === 'true') {
+    document.getElementById('login-page').style.display = 'none';
+    document.getElementById('admin-layout').classList.add('visible');
+    initAdmin();
+  }
 });
 </script>
 </body>
