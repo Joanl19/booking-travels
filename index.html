@@ -843,7 +843,9 @@ function changePassword() {
 // ══════════════════════════════════════════
 // STORAGE HELPERS
 // ══════════════════════════════════════════
-function getBookings() { return JSON.parse(localStorage.getItem('kt_bookings') || '[]'); }
+function getBookings() { 
+  return JSON.parse(localStorage.getItem('kt_bookings') || 'null') || getDefaultBookings(); 
+}
 function setBookings(b) { localStorage.setItem('kt_bookings', JSON.stringify(b)); }
 function getPackages() { return JSON.parse(localStorage.getItem('kt_packages') || 'null') || getDefaultPackages(); }
 function setPackages(p) { localStorage.setItem('kt_packages', JSON.stringify(p)); }
@@ -854,6 +856,60 @@ function setVideos(v) { localStorage.setItem('kt_videos', JSON.stringify(v)); }
 function getReviews() { return JSON.parse(localStorage.getItem('kt_reviews') || 'null') || getDefaultReviews(); }
 function setReviews(r) { localStorage.setItem('kt_reviews', JSON.stringify(r)); }
 
+
+function getDefaultBookings() {
+  return [
+    {
+      id: 1,
+      name: "Rahul Sharma",
+      phone: "9876543210",
+      destination: "Rajasthan",
+      package: "Jaipur Udaipur Tour",
+      travelDate: "2026-06-10",
+      people: 2,
+      status: "New",
+      bookedOn: Date.now() - 86400000,
+      isNew: true,
+      message: "Need hotel near city palace"
+    },
+    {
+      id: 2,
+      name: "Priya Verma",
+      phone: "9123456780",
+      destination: "Goa",
+      package: "Goa Beach Package",
+      travelDate: "2026-05-20",
+      people: 4,
+      status: "Confirmed",
+      bookedOn: Date.now() - 172800000,
+      isNew: false
+    },
+    {
+      id: 3,
+      name: "Amit Singh",
+      phone: "9988776655",
+      destination: "Kashmir",
+      package: "Kashmir Holiday",
+      travelDate: "2026-07-01",
+      people: 3,
+      status: "Pending",
+      bookedOn: Date.now() - 259200000,
+      isNew: true
+    },
+    {
+      id: 4,
+      name: "Neha Gupta",
+      phone: "9012345678",
+      destination: "Uttarakhand",
+      package: "Kedarnath Yatra",
+      travelDate: "2026-05-15",
+      people: 5,
+      status: "Cancelled",
+      bookedOn: Date.now() - 345600000,
+      isNew: false
+    }
+  ];
+}
 // ══════════════════════════════════════════
 // DEFAULTS
 // ══════════════════════════════════════════
