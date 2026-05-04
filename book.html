@@ -1,0 +1,1326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Raj Travels – Admin Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root {
+  --saffron: #e8611a;
+  --saffron-d: #b8470d;
+  --gold: #d4a017;
+  --deep: #1a1208;
+  --cream: #fbf6ee;
+  --white: #ffffff;
+  --text: #2c1f0e;
+  --muted: #7a6a55;
+  --sidebar-w: 240px;
+  --success: #1a9954;
+  --danger: #d63031;
+  --warning: #f39c12;
+  --info: #2980b9;
+  --border: #e8e0d5;
+  --bg: #f5f0e8;
+  --shadow: 0 2px 12px rgba(26,18,8,0.10);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); }
+
+/* ── LOGIN PAGE ── */
+#login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--deep);
+  position: relative;
+  overflow: hidden;
+}
+#login-page::before {
+  content: '';
+  position: absolute;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(232,97,26,0.18) 0%, transparent 70%);
+  top: -200px; right: -200px;
+  border-radius: 50%;
+}
+.login-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 20px;
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 380px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 24px 60px rgba(0,0,0,0.4);
+  animation: slideUp 0.5s ease;
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.login-logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.8rem;
+  color: var(--white);
+  text-align: center;
+  margin-bottom: 0.3rem;
+}
+.login-logo span { color: var(--gold); }
+.login-subtitle { text-align: center; color: rgba(255,255,255,0.45); font-size: 0.85rem; margin-bottom: 2rem; }
+.login-field { margin-bottom: 1rem; }
+.login-field label { display: block; font-size: 0.78rem; color: rgba(255,255,255,0.55); letter-spacing: 0.05em; margin-bottom: 0.4rem; }
+.login-field input {
+  width: 100%;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 10px;
+  padding: 0.8rem 1rem;
+  color: var(--white);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.login-field input:focus { border-color: var(--saffron); }
+.login-field input::placeholder { color: rgba(255,255,255,0.25); }
+.login-btn {
+  width: 100%;
+  background: var(--saffron);
+  color: var(--white);
+  border: none;
+  border-radius: 50px;
+  padding: 0.9rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: background 0.2s, transform 0.2s;
+  margin-top: 0.5rem;
+}
+.login-btn:hover { background: var(--saffron-d); transform: translateY(-1px); }
+.login-error {
+  color: #ff6b6b;
+  font-size: 0.82rem;
+  text-align: center;
+  margin-top: 0.8rem;
+  display: none;
+}
+
+/* ── ADMIN LAYOUT ── */
+#admin-layout { display: none; height: 100vh; flex-direction: row; }
+#admin-layout.visible { display: flex; }
+
+/* SIDEBAR */
+.sidebar {
+  width: var(--sidebar-w);
+  background: var(--deep);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  overflow-y: auto;
+}
+.sidebar-logo {
+  padding: 1.5rem 1.2rem;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+.sidebar-logo .s-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.3rem;
+  color: var(--white);
+  font-weight: 600;
+}
+.sidebar-logo .s-name span { color: var(--gold); }
+.sidebar-logo .s-role {
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.35);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: 0.2rem;
+}
+.sidebar-nav { flex: 1; padding: 1rem 0; }
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1.2rem;
+  color: rgba(255,255,255,0.55);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-left: 3px solid transparent;
+  user-select: none;
+}
+.nav-item:hover { color: var(--white); background: rgba(255,255,255,0.04); }
+.nav-item.active { color: var(--gold); background: rgba(212,160,23,0.08); border-left-color: var(--saffron); }
+.nav-item i { width: 18px; text-align: center; font-size: 0.9rem; }
+.nav-section-title {
+  padding: 1rem 1.2rem 0.4rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.2);
+}
+.sidebar-footer {
+  padding: 1rem 1.2rem;
+  border-top: 1px solid rgba(255,255,255,0.07);
+}
+.logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: rgba(255,255,255,0.45);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: color 0.2s;
+  background: none;
+  border: none;
+  font-family: 'DM Sans', sans-serif;
+}
+.logout-btn:hover { color: #ff6b6b; }
+
+/* MAIN CONTENT */
+.main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.topbar {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 0 1.5rem;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+.topbar-title { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 600; color: var(--text); }
+.topbar-right { display: flex; align-items: center; gap: 1rem; }
+.topbar-badge {
+  background: var(--saffron);
+  color: var(--white);
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  font-size: 0.7rem;
+  font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+.topbar-avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--saffron);
+  color: var(--white);
+  font-weight: 700;
+  font-size: 0.85rem;
+  display: flex; align-items: center; justify-content: center;
+}
+.content-area { flex: 1; overflow-y: auto; padding: 1.5rem; }
+
+/* PANEL */
+.panel { display: none; }
+.panel.active { display: block; }
+
+/* STATS CARDS */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.stat-card {
+  background: var(--white);
+  border-radius: 14px;
+  padding: 1.3rem;
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.stat-icon {
+  width: 48px; height: 48px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+.stat-label { font-size: 0.78rem; color: var(--muted); letter-spacing: 0.03em; }
+.stat-value { font-size: 1.6rem; font-weight: 700; color: var(--text); line-height: 1.2; }
+.stat-sub { font-size: 0.75rem; color: var(--success); }
+
+/* TABLE */
+.table-card {
+  background: var(--white);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.table-header {
+  padding: 1.2rem 1.4rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+}
+.table-header h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; font-weight: 600; }
+.table-filters { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+.filter-select, .filter-input {
+  padding: 0.5rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.83rem;
+  color: var(--text);
+  background: var(--bg);
+  outline: none;
+}
+.filter-select:focus, .filter-input:focus { border-color: var(--saffron); }
+table { width: 100%; border-collapse: collapse; }
+thead th {
+  background: var(--bg);
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+}
+tbody td {
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid #f5f0e8;
+  font-size: 0.875rem;
+  vertical-align: middle;
+}
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover { background: #fdf9f5; }
+
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.7rem;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.badge-new { background: #e6f0ff; color: #2563eb; }
+.badge-confirmed { background: #e6f9ef; color: var(--success); }
+.badge-cancelled { background: #fdecea; color: var(--danger); }
+.badge-pending { background: #fff3cd; color: var(--warning); }
+
+/* ACTION BUTTONS */
+.btn { padding: 0.5rem 1.1rem; border-radius: 8px; border: none; cursor: pointer; font-size: 0.82rem; font-weight: 600; font-family: 'DM Sans', sans-serif; transition: all 0.18s; display: inline-flex; align-items: center; gap: 0.4rem; }
+.btn-sm { padding: 0.35rem 0.8rem; font-size: 0.78rem; }
+.btn-primary { background: var(--saffron); color: var(--white); }
+.btn-primary:hover { background: var(--saffron-d); }
+.btn-success { background: #e6f9ef; color: var(--success); }
+.btn-success:hover { background: var(--success); color: var(--white); }
+.btn-danger { background: #fdecea; color: var(--danger); }
+.btn-danger:hover { background: var(--danger); color: var(--white); }
+.btn-outline { background: transparent; border: 1.5px solid var(--saffron); color: var(--saffron); }
+.btn-outline:hover { background: var(--saffron); color: var(--white); }
+
+/* PACKAGE GRID */
+.pkg-admin-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+.pkg-admin-card {
+  background: var(--white);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.pkg-admin-img { height: 160px; width: 100%; object-fit: cover; }
+.pkg-admin-body { padding: 1rem; }
+.pkg-admin-title { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; font-weight: 600; margin-bottom: 0.4rem; }
+.pkg-admin-meta { font-size: 0.8rem; color: var(--muted); margin-bottom: 0.8rem; }
+.pkg-admin-actions { display: flex; gap: 0.5rem; }
+
+/* MODAL */
+.modal-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(26,18,8,0.65);
+  z-index: 5000;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+.modal-overlay.open { display: flex; }
+.modal-box {
+  background: var(--white);
+  border-radius: 18px;
+  width: 100%; max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 60px rgba(26,18,8,0.3);
+  animation: modalIn 0.25s ease;
+}
+@keyframes modalIn {
+  from { opacity: 0; transform: translateY(20px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.modal-header {
+  padding: 1.2rem 1.4rem;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.modal-header h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; font-weight: 600; }
+.modal-close { background: none; border: none; font-size: 1.3rem; cursor: pointer; color: var(--muted); }
+.modal-body { padding: 1.4rem; }
+.form-field { margin-bottom: 1rem; }
+.form-field label { display: block; font-size: 0.8rem; color: var(--muted); font-weight: 600; letter-spacing: 0.04em; margin-bottom: 0.35rem; }
+.form-field input, .form-field select, .form-field textarea {
+  width: 100%;
+  padding: 0.7rem 0.9rem;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  color: var(--text);
+  background: var(--bg);
+  outline: none;
+  transition: border-color 0.2s;
+  resize: vertical;
+}
+.form-field input:focus, .form-field select:focus, .form-field textarea:focus { border-color: var(--saffron); }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+.modal-footer { padding: 1rem 1.4rem; border-top: 1px solid var(--border); display: flex; gap: 0.6rem; justify-content: flex-end; }
+
+/* GALLERY ADMIN */
+.gallery-admin-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 0.8rem; }
+.gallery-admin-item { position: relative; border-radius: 10px; overflow: hidden; aspect-ratio: 1; }
+.gallery-admin-item img { width: 100%; height: 100%; object-fit: cover; }
+.gallery-admin-item .del-overlay {
+  position: absolute; inset: 0;
+  background: rgba(214,48,49,0.75);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: 0.2s; cursor: pointer;
+  color: white; font-size: 1.3rem;
+}
+.gallery-admin-item:hover .del-overlay { opacity: 1; }
+.add-gallery-btn {
+  aspect-ratio: 1;
+  border: 2px dashed var(--border);
+  border-radius: 10px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  cursor: pointer; color: var(--muted);
+  font-size: 0.8rem; gap: 0.4rem;
+  transition: 0.2s; background: none;
+}
+.add-gallery-btn i { font-size: 1.5rem; }
+.add-gallery-btn:hover { border-color: var(--saffron); color: var(--saffron); }
+
+/* TOAST */
+.toast {
+  position: fixed;
+  bottom: 1.5rem; right: 1.5rem;
+  background: var(--deep);
+  color: var(--white);
+  padding: 0.85rem 1.4rem;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  z-index: 9999;
+  display: flex; align-items: center; gap: 0.6rem;
+  transform: translateY(80px);
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.success { border-left: 4px solid var(--success); }
+.toast.error { border-left: 4px solid var(--danger); }
+
+/* REVIEWS */
+.review-card {
+  background: var(--white);
+  border-radius: 12px;
+  padding: 1.2rem;
+  box-shadow: var(--shadow);
+  margin-bottom: 0.8rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+.review-stars { color: var(--gold); font-size: 0.9rem; }
+.review-text { font-size: 0.875rem; color: var(--text); margin-top: 0.3rem; line-height: 1.6; }
+.review-author { font-size: 0.78rem; color: var(--muted); margin-top: 0.4rem; }
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .sidebar { width: 200px; }
+  .form-row { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-page">
+  <div class="login-card">
+    <div class="login-logo">Raj <span>Travels</span></div>
+    <p class="login-subtitle">Admin Dashboard · Secure Login</p>
+    <div class="login-field">
+      <label>Username</label>
+      <input type="text" id="loginUser" placeholder="admin" autocomplete="username">
+    </div>
+    <div class="login-field">
+      <label>Password</label>
+      <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="login-btn" onclick="doLogin()">Sign In <i class="fa-solid fa-arrow-right-to-bracket" style="margin-left:6px"></i></button>
+    <p class="login-error" id="loginErr">Invalid credentials. Try again.</p>
+    <p style="text-align:center;font-size:0.75rem;color:rgba(255,255,255,0.2);margin-top:1.2rem">Default: admin / Raj2024</p>
+  </div>
+</div>
+
+<!-- ADMIN LAYOUT -->
+<div id="admin-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="s-name">Raj <span>Travels</span></div>
+      <div class="s-role">Admin Panel</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-title">Overview</div>
+      <div class="nav-item active" onclick="switchPanel('dashboard', this)">
+        <i class="fa-solid fa-gauge-high"></i> Dashboard
+      </div>
+      <div class="nav-section-title">Manage</div>
+      <div class="nav-item" onclick="switchPanel('bookings', this)">
+        <i class="fa-solid fa-calendar-check"></i> Bookings
+        <span class="topbar-badge" id="newBookingBadge" style="margin-left:auto;display:none"></span>
+      </div>
+      <div class="nav-item" onclick="switchPanel('packages', this)">
+        <i class="fa-solid fa-suitcase-rolling"></i> Packages
+      </div>
+      <div class="nav-item" onclick="switchPanel('gallery', this)">
+        <i class="fa-solid fa-images"></i> Gallery
+      </div>
+      <div class="nav-item" onclick="switchPanel('videos', this)">
+        <i class="fa-solid fa-video"></i> Videos
+      </div>
+      <div class="nav-item" onclick="switchPanel('reviews', this)">
+        <i class="fa-solid fa-star"></i> Reviews
+      </div>
+      <div class="nav-section-title">Account</div>
+      <div class="nav-item" onclick="switchPanel('settings', this)">
+        <i class="fa-solid fa-gear"></i> Settings
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="logout-btn" onclick="doLogout()">
+        <i class="fa-solid fa-right-from-bracket"></i> Logout
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main-content">
+    <div class="topbar">
+      <div class="topbar-title" id="topbarTitle">Dashboard</div>
+      <div class="topbar-right">
+        <span style="font-size:0.8rem;color:var(--muted)" id="topbarDate"></span>
+        <div class="topbar-avatar">A</div>
+      </div>
+    </div>
+
+    <div class="content-area">
+
+      <!-- DASHBOARD PANEL -->
+      <div class="panel active" id="panel-dashboard">
+        <div class="stats-grid" id="statsGrid"></div>
+        <div class="table-card">
+          <div class="table-header">
+            <h3>Recent Bookings</h3>
+            <button class="btn btn-outline btn-sm" onclick="switchPanel('bookings', document.querySelector('[onclick*=bookings]'))">View All</button>
+          </div>
+          <div style="overflow-x:auto">
+            <table id="recentTable">
+              <thead><tr><th>Name</th><th>Package</th><th>Destination</th><th>Date</th><th>People</th><th>Status</th></tr></thead>
+              <tbody id="recentBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- BOOKINGS PANEL -->
+      <div class="panel" id="panel-bookings">
+        <div class="table-card">
+          <div class="table-header">
+            <h3>All Bookings</h3>
+            <div class="table-filters">
+              <input class="filter-input" placeholder="Search name / phone…" id="searchBooking" oninput="renderBookings()">
+              <select class="filter-select" id="filterDest" onchange="renderBookings()">
+                <option value="">All Destinations</option>
+                <option>Rajasthan</option><option>Kerala</option><option>Himachal Pradesh</option>
+                <option>Goa</option><option>Uttarakhand</option><option>Kashmir</option>
+                <option>Bali</option><option>Thailand</option>
+              </select>
+              <input type="date" class="filter-input" id="filterDate" onchange="renderBookings()">
+              <select class="filter-select" id="filterStatus" onchange="renderBookings()">
+                <option value="">All Status</option>
+                <option>New</option><option>Confirmed</option><option>Cancelled</option><option>Pending</option>
+              </select>
+              <button class="btn btn-sm" style="background:#f5f0e8;border:1px solid var(--border)" onclick="clearBookingFilters()"><i class="fa-solid fa-xmark"></i> Clear</button>
+            </div>
+          </div>
+          <div style="overflow-x:auto">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th><th>Name</th><th>Phone</th><th>Destination</th>
+                  <th>Package</th><th>Travel Date</th><th>People</th>
+                  <th>Booked On</th><th>Status</th><th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="bookingsBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- PACKAGES PANEL -->
+      <div class="panel" id="panel-packages">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem">
+          <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.3rem">Tour Packages</h3>
+          <button class="btn btn-primary" onclick="openPkgModal()"><i class="fa-solid fa-plus"></i> Add Package</button>
+        </div>
+        <div class="pkg-admin-grid" id="pkgAdminGrid"></div>
+      </div>
+
+      <!-- GALLERY PANEL -->
+      <div class="panel" id="panel-gallery">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem">
+          <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.3rem">Photo Gallery</h3>
+          <button class="btn btn-primary" onclick="openGalleryModal()"><i class="fa-solid fa-plus"></i> Add Photo</button>
+        </div>
+        <div class="gallery-admin-grid" id="galleryAdminGrid"></div>
+      </div>
+
+      <!-- VIDEOS PANEL -->
+      <div class="panel" id="panel-videos">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem">
+          <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.3rem">Travel Videos</h3>
+          <button class="btn btn-primary" onclick="openVideoModal()"><i class="fa-solid fa-plus"></i> Add Video</button>
+        </div>
+        <div class="table-card">
+          <div style="overflow-x:auto">
+            <table>
+              <thead><tr><th>Title</th><th>Subtitle</th><th>URL</th><th>Added</th><th>Actions</th></tr></thead>
+              <tbody id="videosBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- REVIEWS PANEL -->
+      <div class="panel" id="panel-reviews">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem">
+          <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.3rem">Customer Reviews</h3>
+          <button class="btn btn-primary" onclick="openReviewModal()"><i class="fa-solid fa-plus"></i> Add Review</button>
+        </div>
+        <div id="reviewsList"></div>
+      </div>
+
+      <!-- SETTINGS PANEL -->
+      <div class="panel" id="panel-settings">
+        <div class="table-card" style="max-width:480px">
+          <div class="table-header"><h3>Change Admin Password</h3></div>
+          <div class="modal-body">
+            <div class="form-field">
+              <label>Current Password</label>
+              <input type="password" id="curPass" placeholder="••••••••">
+            </div>
+            <div class="form-field">
+              <label>New Password</label>
+              <input type="password" id="newPass" placeholder="••••••••">
+            </div>
+            <div class="form-field">
+              <label>Confirm New Password</label>
+              <input type="password" id="confPass" placeholder="••••••••">
+            </div>
+            <button class="btn btn-primary" onclick="changePassword()"><i class="fa-solid fa-lock"></i> Update Password</button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- content-area -->
+  </div><!-- main-content -->
+</div><!-- admin-layout -->
+
+<!-- MODALS -->
+
+<!-- Package Modal -->
+<div class="modal-overlay" id="pkgModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3 id="pkgModalTitle">Add Package</h3>
+      <button class="modal-close" onclick="closePkgModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="pkgId">
+      <div class="form-field"><label>Package Title</label><input id="pkgTitle" placeholder="e.g. Goa Beach Holiday"></div>
+      <div class="form-row">
+        <div class="form-field"><label>Destination</label>
+          <select id="pkgDest">
+            <option>Rajasthan</option><option>Kerala</option><option>Himachal Pradesh</option>
+            <option>Goa</option><option>Uttarakhand</option><option>Kashmir</option>
+            <option>Bali</option><option>Thailand</option><option>Other</option>
+          </select>
+        </div>
+        <div class="form-field"><label>Type</label>
+          <select id="pkgType">
+            <option value="hills">Hills</option><option value="beach">Beach</option>
+            <option value="cultural">Cultural</option><option value="International">International</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-field"><label>Days</label><input type="number" id="pkgDays" min="1" value="4"></div>
+        <div class="form-field"><label>Nights</label><input type="number" id="pkgNights" min="1" value="3"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-field"><label>Price (₹)</label><input id="pkgPrice" placeholder="9,999"></div>
+        <div class="form-field"><label>Old Price (₹)</label><input id="pkgOldPrice" placeholder="11,999"></div>
+      </div>
+      <div class="form-field"><label>Image URL</label><input id="pkgImg" placeholder="https://…"></div>
+      <div class="form-field"><label>Short Description</label><textarea id="pkgDesc" rows="2" placeholder="Brief description…"></textarea></div>
+      <div class="form-field"><label>Inclusions (one per line)</label><textarea id="pkgInc" rows="4" placeholder="Breakfast&#10;AC Transport&#10;Hotel"></textarea></div>
+      <div class="form-field"><label>Exclusions (one per line)</label><textarea id="pkgExc" rows="3" placeholder="Flights&#10;Personal expenses"></textarea></div>
+      <div class="form-field"><label>Itinerary (JSON format)</label>
+        <textarea id="pkgItin" rows="5" placeholder='[{"day":1,"title":"Arrival","desc":"Check-in..."}]'></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" style="background:var(--bg);border:1px solid var(--border)" onclick="closePkgModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="savePkg()"><i class="fa-solid fa-save"></i> Save Package</button>
+    </div>
+  </div>
+</div>
+
+<!-- Gallery Modal -->
+<div class="modal-overlay" id="galleryModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>Add Gallery Photo</h3>
+      <button class="modal-close" onclick="document.getElementById('galleryModal').classList.remove('open')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-field"><label>Image URL</label><input id="galleryUrl" placeholder="https://images.unsplash.com/…"></div>
+      <div class="form-field"><label>Caption (optional)</label><input id="galleryCaption" placeholder="Beautiful Rajasthan…"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" style="background:var(--bg);border:1px solid var(--border)" onclick="document.getElementById('galleryModal').classList.remove('open')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveGallery()">Add Photo</button>
+    </div>
+  </div>
+</div>
+
+<!-- Video Modal -->
+<div class="modal-overlay" id="videoModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3 id="videoModalTitle">Add Video</h3>
+      <button class="modal-close" onclick="closeVideoModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="videoId">
+      <div class="form-field"><label>Title</label><input id="videoTitle" placeholder="Rajasthan – Land of Kings"></div>
+      <div class="form-field"><label>Subtitle</label><input id="videoSubtitle" placeholder="Palaces & deserts"></div>
+      <div class="form-field"><label>Video URL (MP4)</label><input id="videoUrl" placeholder="https://videos.pexels.com/…"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" style="background:var(--bg);border:1px solid var(--border)" onclick="closeVideoModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveVideo()">Save Video</button>
+    </div>
+  </div>
+</div>
+
+<!-- Review Modal -->
+<div class="modal-overlay" id="reviewModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3 id="reviewModalTitle">Add Review</h3>
+      <button class="modal-close" onclick="closeReviewModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="reviewId">
+      <div class="form-row">
+        <div class="form-field"><label>Customer Name</label><input id="reviewName" placeholder="Ananya Sharma"></div>
+        <div class="form-field"><label>Location</label><input id="reviewLoc" placeholder="Mumbai"></div>
+      </div>
+      <div class="form-field"><label>Rating (1-5)</label>
+        <select id="reviewRating">
+          <option value="5">★★★★★ (5)</option><option value="4">★★★★ (4)</option>
+          <option value="3">★★★ (3)</option><option value="2">★★ (2)</option><option value="1">★ (1)</option>
+        </select>
+      </div>
+      <div class="form-field"><label>Review Text</label><textarea id="reviewText" rows="4" placeholder="Write the customer's review…"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" style="background:var(--bg);border:1px solid var(--border)" onclick="closeReviewModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveReview()">Save Review</button>
+    </div>
+  </div>
+</div>
+
+<!-- Booking Detail Modal -->
+<div class="modal-overlay" id="bookingDetailModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>Booking Details</h3>
+      <button class="modal-close" onclick="document.getElementById('bookingDetailModal').classList.remove('open')">✕</button>
+    </div>
+    <div class="modal-body" id="bookingDetailBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-success" onclick="updateBookingStatus('Confirmed')"><i class="fa-solid fa-check"></i> Confirm</button>
+      <button class="btn btn-danger" onclick="updateBookingStatus('Cancelled')"><i class="fa-solid fa-xmark"></i> Cancel</button>
+      <button class="btn" style="background:var(--bg);border:1px solid var(--border)" onclick="document.getElementById('bookingDetailModal').classList.remove('open')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════
+// ADMIN CREDENTIALS
+// ══════════════════════════════════════════
+let ADMIN_USER = 'admin';
+let ADMIN_PASS = 'Raj2024';
+let currentBookingId = null;
+
+function doLogin() {
+  const u = document.getElementById('loginUser').value.trim();
+  const p = document.getElementById('loginPass').value.trim();
+  const savedPass = localStorage.getItem('adminPass') || ADMIN_PASS;
+  const savedUser = localStorage.getItem('adminUser') || ADMIN_USER;
+  if (u === savedUser && p === savedPass) {
+    document.getElementById('login-page').style.display = 'none';
+    document.getElementById('admin-layout').classList.add('visible');
+    initAdmin();
+  } else {
+    document.getElementById('loginErr').style.display = 'block';
+  }
+}
+
+function doLogout() {
+  document.getElementById('admin-layout').classList.remove('visible');
+  document.getElementById('login-page').style.display = 'flex';
+  document.getElementById('loginPass').value = '';
+  document.getElementById('loginErr').style.display = 'none';
+}
+
+function changePassword() {
+  const cur = document.getElementById('curPass').value;
+  const nw = document.getElementById('newPass').value;
+  const cf = document.getElementById('confPass').value;
+  const savedPass = localStorage.getItem('adminPass') || ADMIN_PASS;
+  if (cur !== savedPass) { toast('Current password is wrong', 'error'); return; }
+  if (nw !== cf) { toast('Passwords do not match', 'error'); return; }
+  if (nw.length < 6) { toast('Password too short (min 6)', 'error'); return; }
+  localStorage.setItem('adminPass', nw);
+  toast('Password updated!', 'success');
+  document.getElementById('curPass').value = '';
+  document.getElementById('newPass').value = '';
+  document.getElementById('confPass').value = '';
+}
+
+// ══════════════════════════════════════════
+// STORAGE HELPERS
+// ══════════════════════════════════════════
+function getBookings() { return JSON.parse(localStorage.getItem('kt_bookings') || '[]'); }
+function setBookings(b) { localStorage.setItem('kt_bookings', JSON.stringify(b)); }
+function getPackages() { return JSON.parse(localStorage.getItem('kt_packages') || 'null') || getDefaultPackages(); }
+function setPackages(p) { localStorage.setItem('kt_packages', JSON.stringify(p)); }
+function getGallery() { return JSON.parse(localStorage.getItem('kt_gallery') || 'null') || getDefaultGallery(); }
+function setGallery(g) { localStorage.setItem('kt_gallery', JSON.stringify(g)); }
+function getVideos() { return JSON.parse(localStorage.getItem('kt_videos') || 'null') || getDefaultVideos(); }
+function setVideos(v) { localStorage.setItem('kt_videos', JSON.stringify(v)); }
+function getReviews() { return JSON.parse(localStorage.getItem('kt_reviews') || 'null') || getDefaultReviews(); }
+function setReviews(r) { localStorage.setItem('kt_reviews', JSON.stringify(r)); }
+
+// ══════════════════════════════════════════
+// DEFAULTS
+// ══════════════════════════════════════════
+function getDefaultPackages() {
+  return [
+    { id: 1, title: "Kedarnath Yatra", dest: "Uttarakhand", days: 6, nights: 5, price: "₹7,999", oldPrice: "₹9,999", img: "https://images.unsplash.com/photo-1623952146070-f13fc902f769?w=400&q=60", desc: "Delhi Pickup • Hotel + Camp Stay", type: "hills", inclusions: ["Transport", "Hotel Stay", "Meals"], exclusions: ["Lunch", "Helicopter"], itinerary: [{ day: 1, title: "Delhi Departure", desc: "Overnight journey begins." }] },
+    { id: 2, title: "Kashmir Holiday", dest: "Kashmir", days: 4, nights: 3, price: "₹9,999", oldPrice: "₹11,999", img: "https://images.unsplash.com/photo-1715457573748-8e8a70b2c1be?w=400&q=60", desc: "Dal Lake • Gulmarg • Pahalgam", type: "hills", inclusions: ["Hotel", "Breakfast", "Cab"], exclusions: ["Flights", "Lunch"], itinerary: [{ day: 1, title: "Srinagar Arrival", desc: "Check in & Dal Lake Shikara." }] },
+    { id: 3, title: "Goa Beach Package", dest: "Goa", days: 4, nights: 3, price: "₹9,999", oldPrice: "₹11,999", img: "https://images.unsplash.com/photo-1682743710558-b338ba285925?w=400&q=60", desc: "North & South Goa Sightseeing", type: "beach", inclusions: ["Hotel", "Meals", "Cab"], exclusions: ["Flights"], itinerary: [{ day: 1, title: "North Goa", desc: "Beach hopping." }] },
+  ];
+}
+function getDefaultGallery() {
+  return [
+    { id: 1, url: "https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=400", caption: "Taj Mahal" },
+    { id: 2, url: "https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?w=400", caption: "Kerala Backwaters" },
+    { id: 3, url: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400", caption: "Himalayan Mountains" },
+    { id: 4, url: "https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?w=400", caption: "Goa Beach" },
+  ];
+}
+function getDefaultVideos() {
+  return [
+    { id: 1, title: "Rajasthan – Land of Kings", subtitle: "Palaces & deserts", url: "https://videos.pexels.com/video-files/13327036/13327036-uhd_2560_1440_25fps.mp4" },
+    { id: 2, title: "Kerala Backwaters", subtitle: "Houseboats & greenery", url: "https://videos.pexels.com/video-files/35097635/14868725_1920_1080_25fps.mp4" },
+    { id: 3, title: "Himalayan Odyssey", subtitle: "Snow mountains", url: "https://videos.pexels.com/video-files/35058289/14850953_1080_1920_60fps.mp4" },
+  ];
+}
+function getDefaultReviews() {
+  return [
+    { id: 1, name: "Ananya Sharma", loc: "Mumbai", rating: 5, text: "Raj Travel made our Rajasthan trip absolutely magical. Every detail was perfectly planned!" },
+    { id: 2, name: "Rohan Mehta", loc: "Bangalore", rating: 5, text: "The Kerala backwaters tour was beyond anything I expected. Pure value for money." },
+    { id: 3, name: "Priya Nair", loc: "Chennai", rating: 5, text: "As a solo female traveller, safety was my top concern. Raj Travel exceeded all expectations." },
+  ];
+}
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+function initAdmin() {
+  document.getElementById('topbarDate').textContent = new Date().toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+  renderDashboard();
+  renderBookings();
+  renderPackages();
+  renderGallery();
+  renderVideos();
+  renderReviews();
+  updateBadge();
+}
+
+// ══════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════
+function switchPanel(name, el) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  if (el) el.classList.add('active');
+  const titles = { dashboard: 'Dashboard', bookings: 'Bookings', packages: 'Packages', gallery: 'Gallery', videos: 'Videos', reviews: 'Reviews', settings: 'Settings' };
+  document.getElementById('topbarTitle').textContent = titles[name] || name;
+  if (name === 'bookings') { markBookingsRead(); updateBadge(); }
+}
+
+function updateBadge() {
+  const bookings = getBookings();
+  const newCount = bookings.filter(b => b.isNew).length;
+  const badge = document.getElementById('newBookingBadge');
+  if (newCount > 0) { badge.textContent = newCount; badge.style.display = 'flex'; }
+  else { badge.style.display = 'none'; }
+}
+
+function markBookingsRead() {
+  const bookings = getBookings().map(b => ({ ...b, isNew: false }));
+  setBookings(bookings);
+}
+
+// ══════════════════════════════════════════
+// DASHBOARD
+// ══════════════════════════════════════════
+function renderDashboard() {
+  const bookings = getBookings();
+  const packages = getPackages();
+  const total = bookings.length;
+  const confirmed = bookings.filter(b => b.status === 'Confirmed').length;
+  const pending = bookings.filter(b => b.status === 'New' || b.status === 'Pending').length;
+  const revenue = bookings.filter(b => b.status === 'Confirmed').length * 9999;
+
+  document.getElementById('statsGrid').innerHTML = `
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#fff0e6"><i class="fa-solid fa-calendar-check" style="color:var(--saffron)"></i></div>
+      <div><div class="stat-label">Total Bookings</div><div class="stat-value">${total}</div><div class="stat-sub">All time</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#e6f9ef"><i class="fa-solid fa-circle-check" style="color:var(--success)"></i></div>
+      <div><div class="stat-label">Confirmed</div><div class="stat-value">${confirmed}</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#fff3cd"><i class="fa-solid fa-clock" style="color:var(--warning)"></i></div>
+      <div><div class="stat-label">Pending Review</div><div class="stat-value">${pending}</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#e6f0ff"><i class="fa-solid fa-suitcase-rolling" style="color:#2563eb"></i></div>
+      <div><div class="stat-label">Active Packages</div><div class="stat-value">${packages.length}</div></div>
+    </div>
+  `;
+
+  const recent = [...bookings].reverse().slice(0, 5);
+  document.getElementById('recentBody').innerHTML = recent.length
+    ? recent.map(b => `
+      <tr>
+        <td>${b.name}</td>
+        <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${b.package}</td>
+        <td>${b.destination}</td>
+        <td>${b.travelDate || '—'}</td>
+        <td>${b.people}</td>
+        <td><span class="badge badge-${b.status.toLowerCase()}">${b.status}</span></td>
+      </tr>`).join('')
+    : '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:2rem">No bookings yet</td></tr>';
+}
+
+// ══════════════════════════════════════════
+// BOOKINGS
+// ══════════════════════════════════════════
+function renderBookings() {
+  let bookings = getBookings();
+  const search = document.getElementById('searchBooking')?.value.toLowerCase() || '';
+  const dest = document.getElementById('filterDest')?.value || '';
+  const date = document.getElementById('filterDate')?.value || '';
+  const status = document.getElementById('filterStatus')?.value || '';
+
+  if (search) bookings = bookings.filter(b => b.name.toLowerCase().includes(search) || (b.phone || '').includes(search));
+  if (dest) bookings = bookings.filter(b => b.destination === dest);
+  if (date) bookings = bookings.filter(b => b.travelDate === date);
+  if (status) bookings = bookings.filter(b => b.status === status);
+
+  bookings = [...bookings].reverse();
+
+  document.getElementById('bookingsBody').innerHTML = bookings.length
+    ? bookings.map((b, i) => `
+      <tr>
+        <td style="color:var(--muted);font-size:0.78rem">${b.id || i + 1}</td>
+        <td><strong>${b.name}</strong></td>
+        <td>${b.phone || '—'}</td>
+        <td>${b.destination}</td>
+        <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${b.package}</td>
+        <td>${b.travelDate || '—'}</td>
+        <td>${b.people}</td>
+        <td style="font-size:0.78rem;color:var(--muted)">${new Date(b.bookedOn).toLocaleDateString('en-IN')}</td>
+        <td><span class="badge badge-${b.status.toLowerCase()}">${b.status}</span></td>
+        <td>
+          <div style="display:flex;gap:0.4rem">
+            <button class="btn btn-sm btn-outline" onclick="viewBooking('${b.id}')"><i class="fa-solid fa-eye"></i></button>
+            <button class="btn btn-sm btn-success" onclick="quickStatus('${b.id}','Confirmed')"><i class="fa-solid fa-check"></i></button>
+            <button class="btn btn-sm btn-danger" onclick="quickStatus('${b.id}','Cancelled')"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+        </td>
+      </tr>`).join('')
+    : '<tr><td colspan="10" style="text-align:center;color:var(--muted);padding:2rem">No bookings match the filters</td></tr>';
+}
+
+function clearBookingFilters() {
+  document.getElementById('searchBooking').value = '';
+  document.getElementById('filterDest').value = '';
+  document.getElementById('filterDate').value = '';
+  document.getElementById('filterStatus').value = '';
+  renderBookings();
+}
+
+function viewBooking(id) {
+  const b = getBookings().find(x => x.id == id);
+  if (!b) return;
+  currentBookingId = id;
+  document.getElementById('bookingDetailBody').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.8rem">
+      <div><div style="font-size:0.75rem;color:var(--muted);margin-bottom:2px">Customer Name</div><strong>${b.name}</strong></div>
+      <div><div style="font-size:0.75rem;color:var(--muted);margin-bottom:2px">Phone</div><strong>${b.phone || '—'}</strong></div>
+      <div><div style="font-size:0.75rem;color:var(--muted);margin-bottom:2px">Destination</div><strong>${b.destination}</strong></div>
+      <div><div style="font-size:0.75rem;color:var(--muted);margin-bottom:2px">Package</div><strong>${b.package}</strong></div>
+      <div><div style="font-size:0.75rem;color:var(--muted);margin-bottom:2px">Travel Date</div><strong>${b.travelDate || '—'}</strong></div>
+      <div><div style="font-size:0.75rem;color:var(--muted);margin-bottom:2px">No. of People</div><strong>${b.people}</strong></div>
+      <div><div style="font-size:0.75rem;color:var(--muted);margin-bottom:2px">Status</div><span class="badge badge-${b.status.toLowerCase()}">${b.status}</span></div>
+      <div><div style="font-size:0.75rem;color:var(--muted);margin-bottom:2px">Booked On</div><strong>${new Date(b.bookedOn).toLocaleString('en-IN')}</strong></div>
+    </div>
+    ${b.message ? `<div style="margin-top:1rem"><div style="font-size:0.75rem;color:var(--muted);margin-bottom:4px">Message</div><p style="background:var(--bg);border-radius:8px;padding:0.8rem;font-size:0.875rem">${b.message}</p></div>` : ''}
+  `;
+  document.getElementById('bookingDetailModal').classList.add('open');
+}
+
+function updateBookingStatus(status) {
+  const bookings = getBookings().map(b => b.id == currentBookingId ? { ...b, status } : b);
+  setBookings(bookings);
+  renderBookings(); renderDashboard();
+  document.getElementById('bookingDetailModal').classList.remove('open');
+  toast(`Booking ${status.toLowerCase()}!`, 'success');
+}
+
+function quickStatus(id, status) {
+  const bookings = getBookings().map(b => b.id == id ? { ...b, status } : b);
+  setBookings(bookings);
+  renderBookings(); renderDashboard();
+  toast(`Marked as ${status}`, 'success');
+}
+
+// ══════════════════════════════════════════
+// PACKAGES
+// ══════════════════════════════════════════
+function renderPackages() {
+  const pkgs = getPackages();
+  document.getElementById('pkgAdminGrid').innerHTML = pkgs.map(p => `
+    <div class="pkg-admin-card">
+      <img class="pkg-admin-img" src="${p.img}" alt="${p.title}" onerror="this.src='https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=400&q=60'">
+      <div class="pkg-admin-body">
+        <div class="pkg-admin-title">${p.title}</div>
+        <div class="pkg-admin-meta"><i class="fa-solid fa-location-dot" style="color:var(--saffron)"></i> ${p.dest} &nbsp;•&nbsp; <i class="fa-solid fa-calendar-days"></i> ${p.days}D/${p.nights}N &nbsp;•&nbsp; <strong style="color:var(--saffron)">${p.price}</strong></div>
+        <div class="pkg-admin-actions">
+          <button class="btn btn-sm btn-outline" onclick="openPkgModal(${p.id})"><i class="fa-solid fa-pen"></i> Edit</button>
+          <button class="btn btn-sm btn-danger" onclick="deletePkg(${p.id})"><i class="fa-solid fa-trash"></i> Delete</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openPkgModal(id) {
+  const modal = document.getElementById('pkgModal');
+  if (id) {
+    const p = getPackages().find(x => x.id === id);
+    if (!p) return;
+    document.getElementById('pkgModalTitle').textContent = 'Edit Package';
+    document.getElementById('pkgId').value = p.id;
+    document.getElementById('pkgTitle').value = p.title;
+    document.getElementById('pkgDest').value = p.dest;
+    document.getElementById('pkgType').value = p.type;
+    document.getElementById('pkgDays').value = p.days;
+    document.getElementById('pkgNights').value = p.nights;
+    document.getElementById('pkgPrice').value = p.price;
+    document.getElementById('pkgOldPrice').value = p.oldPrice || '';
+    document.getElementById('pkgImg').value = p.img;
+    document.getElementById('pkgDesc').value = p.desc;
+    document.getElementById('pkgInc').value = (p.inclusions || []).join('\n');
+    document.getElementById('pkgExc').value = (p.exclusions || []).join('\n');
+    document.getElementById('pkgItin').value = JSON.stringify(p.itinerary, null, 2);
+  } else {
+    document.getElementById('pkgModalTitle').textContent = 'Add Package';
+    ['pkgId','pkgTitle','pkgPrice','pkgOldPrice','pkgImg','pkgDesc','pkgInc','pkgExc','pkgItin'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('pkgDays').value = 4;
+    document.getElementById('pkgNights').value = 3;
+  }
+  modal.classList.add('open');
+}
+
+function closePkgModal() { document.getElementById('pkgModal').classList.remove('open'); }
+
+function savePkg() {
+  const id = document.getElementById('pkgId').value;
+  let itin = [];
+  try { itin = JSON.parse(document.getElementById('pkgItin').value || '[]'); } catch(e) { itin = []; }
+  const data = {
+    id: id ? parseInt(id) : Date.now(),
+    title: document.getElementById('pkgTitle').value,
+    dest: document.getElementById('pkgDest').value,
+    type: document.getElementById('pkgType').value,
+    days: parseInt(document.getElementById('pkgDays').value),
+    nights: parseInt(document.getElementById('pkgNights').value),
+    price: document.getElementById('pkgPrice').value,
+    oldPrice: document.getElementById('pkgOldPrice').value,
+    img: document.getElementById('pkgImg').value || 'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=400',
+    desc: document.getElementById('pkgDesc').value,
+    inclusions: document.getElementById('pkgInc').value.split('\n').filter(Boolean),
+    exclusions: document.getElementById('pkgExc').value.split('\n').filter(Boolean),
+    itinerary: itin,
+  };
+  let pkgs = getPackages();
+  if (id) { pkgs = pkgs.map(p => p.id === data.id ? data : p); }
+  else { pkgs.push(data); }
+  setPackages(pkgs);
+  renderPackages();
+  closePkgModal();
+  toast('Package saved!', 'success');
+}
+
+function deletePkg(id) {
+  if (!confirm('Delete this package?')) return;
+  setPackages(getPackages().filter(p => p.id !== id));
+  renderPackages();
+  toast('Package deleted', 'success');
+}
+
+// ══════════════════════════════════════════
+// GALLERY
+// ══════════════════════════════════════════
+function renderGallery() {
+  const imgs = getGallery();
+  document.getElementById('galleryAdminGrid').innerHTML =
+    imgs.map(g => `
+      <div class="gallery-admin-item">
+        <img src="${g.url}" alt="${g.caption}" onerror="this.src='https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=300'">
+        <div class="del-overlay" onclick="deleteGallery(${g.id})"><i class="fa-solid fa-trash"></i></div>
+      </div>
+    `).join('') +
+    `<button class="add-gallery-btn" onclick="openGalleryModal()"><i class="fa-solid fa-plus"></i><span>Add Photo</span></button>`;
+}
+
+function openGalleryModal() {
+  document.getElementById('galleryUrl').value = '';
+  document.getElementById('galleryCaption').value = '';
+  document.getElementById('galleryModal').classList.add('open');
+}
+
+function saveGallery() {
+  const url = document.getElementById('galleryUrl').value.trim();
+  if (!url) { toast('Please enter an image URL', 'error'); return; }
+  const imgs = getGallery();
+  imgs.push({ id: Date.now(), url, caption: document.getElementById('galleryCaption').value });
+  setGallery(imgs);
+  renderGallery();
+  document.getElementById('galleryModal').classList.remove('open');
+  toast('Photo added!', 'success');
+}
+
+function deleteGallery(id) {
+  if (!confirm('Remove this photo?')) return;
+  setGallery(getGallery().filter(g => g.id !== id));
+  renderGallery();
+  toast('Photo removed', 'success');
+}
+
+// ══════════════════════════════════════════
+// VIDEOS
+// ══════════════════════════════════════════
+function renderVideos() {
+  const vids = getVideos();
+  document.getElementById('videosBody').innerHTML = vids.length
+    ? vids.map(v => `
+      <tr>
+        <td><strong>${v.title}</strong></td>
+        <td>${v.subtitle}</td>
+        <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:0.78rem;color:var(--muted)">${v.url}</td>
+        <td style="font-size:0.78rem;color:var(--muted)">${v.added ? new Date(v.added).toLocaleDateString('en-IN') : '—'}</td>
+        <td>
+          <div style="display:flex;gap:0.4rem">
+            <button class="btn btn-sm btn-outline" onclick="openVideoModal(${v.id})"><i class="fa-solid fa-pen"></i></button>
+            <button class="btn btn-sm btn-danger" onclick="deleteVideo(${v.id})"><i class="fa-solid fa-trash"></i></button>
+          </div>
+        </td>
+      </tr>`).join('')
+    : '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:2rem">No videos yet</td></tr>';
+}
+
+function openVideoModal(id) {
+  if (id) {
+    const v = getVideos().find(x => x.id === id);
+    if (!v) return;
+    document.getElementById('videoModalTitle').textContent = 'Edit Video';
+    document.getElementById('videoId').value = v.id;
+    document.getElementById('videoTitle').value = v.title;
+    document.getElementById('videoSubtitle').value = v.subtitle;
+    document.getElementById('videoUrl').value = v.url;
+  } else {
+    document.getElementById('videoModalTitle').textContent = 'Add Video';
+    ['videoId','videoTitle','videoSubtitle','videoUrl'].forEach(i => document.getElementById(i).value = '');
+  }
+  document.getElementById('videoModal').classList.add('open');
+}
+function closeVideoModal() { document.getElementById('videoModal').classList.remove('open'); }
+
+function saveVideo() {
+  const id = document.getElementById('videoId').value;
+  const data = {
+    id: id ? parseInt(id) : Date.now(),
+    title: document.getElementById('videoTitle').value,
+    subtitle: document.getElementById('videoSubtitle').value,
+    url: document.getElementById('videoUrl').value,
+    added: Date.now(),
+  };
+  let vids = getVideos();
+  if (id) { vids = vids.map(v => v.id == data.id ? data : v); }
+  else { vids.push(data); }
+  setVideos(vids);
+  renderVideos();
+  closeVideoModal();
+  toast('Video saved!', 'success');
+}
+function deleteVideo(id) {
+  if (!confirm('Delete this video?')) return;
+  setVideos(getVideos().filter(v => v.id !== id));
+  renderVideos();
+  toast('Video deleted', 'success');
+}
+
+// ══════════════════════════════════════════
+// REVIEWS
+// ══════════════════════════════════════════
+function renderReviews() {
+  const revs = getReviews();
+  document.getElementById('reviewsList').innerHTML = revs.length
+    ? revs.map(r => `
+      <div class="review-card">
+        <div style="flex:1">
+          <div class="review-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</div>
+          <div class="review-text">"${r.text}"</div>
+          <div class="review-author"><i class="fa-solid fa-user" style="color:var(--saffron)"></i> ${r.name} · ${r.loc}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:0.4rem">
+          <button class="btn btn-sm btn-outline" onclick="openReviewModal(${r.id})"><i class="fa-solid fa-pen"></i></button>
+          <button class="btn btn-sm btn-danger" onclick="deleteReview(${r.id})"><i class="fa-solid fa-trash"></i></button>
+        </div>
+      </div>`).join('')
+    : '<p style="color:var(--muted)">No reviews yet.</p>';
+}
+
+function openReviewModal(id) {
+  if (id) {
+    const r = getReviews().find(x => x.id === id);
+    if (!r) return;
+    document.getElementById('reviewModalTitle').textContent = 'Edit Review';
+    document.getElementById('reviewId').value = r.id;
+    document.getElementById('reviewName').value = r.name;
+    document.getElementById('reviewLoc').value = r.loc;
+    document.getElementById('reviewRating').value = r.rating;
+    document.getElementById('reviewText').value = r.text;
+  } else {
+    document.getElementById('reviewModalTitle').textContent = 'Add Review';
+    ['reviewId','reviewName','reviewLoc','reviewText'].forEach(i => document.getElementById(i).value = '');
+    document.getElementById('reviewRating').value = 5;
+  }
+  document.getElementById('reviewModal').classList.add('open');
+}
+function closeReviewModal() { document.getElementById('reviewModal').classList.remove('open'); }
+
+function saveReview() {
+  const id = document.getElementById('reviewId').value;
+  const data = {
+    id: id ? parseInt(id) : Date.now(),
+    name: document.getElementById('reviewName').value,
+    loc: document.getElementById('reviewLoc').value,
+    rating: parseInt(document.getElementById('reviewRating').value),
+    text: document.getElementById('reviewText').value,
+  };
+  if (!data.name || !data.text) { toast('Name and review text required', 'error'); return; }
+  let revs = getReviews();
+  if (id) { revs = revs.map(r => r.id == data.id ? data : r); }
+  else { revs.push(data); }
+  setReviews(revs);
+  renderReviews();
+  closeReviewModal();
+  toast('Review saved!', 'success');
+}
+function deleteReview(id) {
+  if (!confirm('Delete this review?')) return;
+  setReviews(getReviews().filter(r => r.id !== id));
+  renderReviews();
+  toast('Review deleted', 'success');
+}
+
+// ══════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════
+let toastTimer;
+function toast(msg, type = 'success') {
+  const el = document.getElementById('toast');
+  el.innerHTML = `<i class="fa-solid fa-${type === 'success' ? 'circle-check' : 'circle-xmark'}"></i> ${msg}`;
+  el.className = `toast ${type} show`;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+// Close modals on overlay click
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
+});
+</script>
+</body>
+</html>
